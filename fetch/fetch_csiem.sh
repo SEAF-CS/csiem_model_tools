@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export MODEL_VERS='csiem_model_tfvaed_1.0'
-export MODEL_BC_PATH='s3://wwmsp1/csiem-model/'
+export MODEL_BC_PATH='s3://wamsi-westport-project-1/csiem-model'
 export ACCESS_KEY_ID=''
 export ACCESS_KEY_SECRET=''
 
@@ -113,7 +113,7 @@ s3simple() {
     local bucket="${path%%/*}"
     local key="${path#*/}"
 
-echo    curl ${args[@]} -s -f -H \"Date: ${date}\" -H \"Authorization: ${authorization}\" \"https://projects.pawsey.org.au/${bucket}/${key}\"
+#   echo curl ${args[@]} -s -f -H \"Date: ${date}\" -H \"Authorization: ${authorization}\" \"https://projects.pawsey.org.au/${bucket}/${key}\"
     curl ${args[@]} -s -f -H "Date: ${date}" -H "Authorization: ${authorization}" "https://projects.pawsey.org.au/${bucket}/${key}"
 #   echo $?
 }
@@ -133,21 +133,34 @@ if [ "${MODEL_BC_PATH:0:5}" = "s3://" ] ; then
 fi
 #
 #
-git clone https://github.com/AquaticEcoDynamics/csiem_model_tools
-git clone https://github.com/AquaticEcoDynamics/${MODEL_VERS}
-
-cd ${MODEL_VERS}
-#
-if [ "${MODEL_BC_PATH:0:5}" = "s3://" ] ; then
-    s3simple ${MODEL_BC_PATH}/${MODEL_VERS}/bc_repo.tar.xz bc_repo.tar.xz
+if [ ! -d csiem_model_tools ] ; then
+  git clone https://github.com/AquaticEcoDynamics/csiem_model_tools
+fi
+if [ -d ${MODEL_VERS} ] ; then
+  cd ${MODEL_VERS}
+  git clone pull
+  cd ..
 else
-    cp ${MODEL_BC_PATH}/${MODEL_VERS}/bc_repo.tar.xz bc_repo.tar.xz
+  git clone https://github.com/AquaticEcoDynamics/${MODEL_VERS}
 fi
 
-#
-#-------------------------------------------------------------------------------
-#
-tar xJf ../bc_repo.tar.xz
-#unzip bc_repo.zip
+if [ -d ${MODEL_VERS} ] ; then
+  cd ${MODEL_VERS}
+  #
+  if [ "${MODEL_BC_PATH:0:5}" = "s3://" ] ; then
+    s3simple ${MODEL_BC_PATH}/${MODEL_VERS}/bc_repo.tar.xz bc_repo.tar.xz
+  else
+    cp ${MODEL_BC_PATH}/${MODEL_VERS}/bc_repo.tar.xz bc_repo.tar.xz
+  fi
+
+  #
+  #-----------------------------------------------------------------------------
+  #
+  if [ -f bc_repo.tar.xz ] ; then
+    tar xJf bc_repo.tar.xz
+  else
+    echo "Failed to get bc_repo"
+  fi
+fi
 
 exit 0
