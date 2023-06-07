@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export MODEL_VERS='csiem_model_tfvaed_1.0'
-export MODEL_BC_PATH='s3://csiem/data-warehouse/'
+export MODEL_BC_PATH='s3://wwmsp1/csiem-model/'
 export ACCESS_KEY_ID=''
 export ACCESS_KEY_SECRET=''
 
@@ -115,7 +115,7 @@ s3simple() {
 
 echo    curl ${args[@]} -s -f -H \"Date: ${date}\" -H \"Authorization: ${authorization}\" \"https://projects.pawsey.org.au/${bucket}/${key}\"
     curl ${args[@]} -s -f -H "Date: ${date}" -H "Authorization: ${authorization}" "https://projects.pawsey.org.au/${bucket}/${key}"
-    echo $?
+#   echo $?
 }
 #-------------------------------------------------------------------------------
 #
@@ -139,8 +139,7 @@ git clone https://github.com/AquaticEcoDynamics/${MODEL_VERS}
 cd ${MODEL_VERS}
 #
 if [ "${MODEL_BC_PATH:0:5}" = "s3://" ] ; then
-  # s3simple ${MODEL_BC_PATH}/${MODEL_VERS}/bc_repo.tar.xz bc_repo.tar.xz
-    s3simple s3://csiem/data-warehouse/mat/cockburn.mat c.mat
+    s3simple ${MODEL_BC_PATH}/${MODEL_VERS}/bc_repo.tar.xz bc_repo.tar.xz
 else
     cp ${MODEL_BC_PATH}/${MODEL_VERS}/bc_repo.tar.xz bc_repo.tar.xz
 fi
@@ -149,6 +148,6 @@ fi
 #-------------------------------------------------------------------------------
 #
 tar xJf ../bc_repo.tar.xz
-unzip bc_repo.zip
+#unzip bc_repo.zip
 
 exit 0
