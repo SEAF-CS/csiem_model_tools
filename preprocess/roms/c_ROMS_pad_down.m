@@ -3,8 +3,8 @@ close all;
 fclose all;
 
 %% - Input
-in_path = '/Projects2/WAMSI/Model/ROMS/inputs_2021/nc/';
-in_name = 'ROMS_UTC+8_20210101_20211231.nc';
+in_path = 'W:\Work\ROMS\Inputs\nc\';
+in_name = 'ROMS_UTC+8_20141001_20151231.nc';
 
 z_max = 3500;
 
