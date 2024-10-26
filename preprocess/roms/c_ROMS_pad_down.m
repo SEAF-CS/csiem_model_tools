@@ -2,9 +2,12 @@ clear all;
 close all;
 fclose all;
 
+addpath(genpath('toolbox'));
+
+
 %% - Input
-in_path = 'W:\Work\ROMS\Inputs\nc\';
-in_name = 'ROMS_UTC+8_20141001_20151231.nc';
+in_path = 'G:\ROMS\Inputs\nc\';
+in_name = 'ROMS_UTC+8_20001001_20011231.nc';
 
 z_max = 3500;
 
