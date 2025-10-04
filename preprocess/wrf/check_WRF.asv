@@ -1,0 +1,137 @@
+clear; close all;
+
+infile='E:\AED Dropbox\AED_Cockburn_db\7_modelling\WRF\20230101000000\results\d02\wrfout_d02_2023-01-01_000000.nc';
+infile2='W:\csiem\Model\TFV\csiem_model_tfvaed_1.1\bc_repo\2_weather\WRF\cockburn_met_wrf4tfv_2022_2023.nc';
+
+times=ncread(infile,'Times');
+lon=ncread(infile,'XLONG');
+lat=ncread(infile,'XLAT');
+
+lon2=ncread(infile2,'longitude');
+lat2=ncread(infile2,'latitude');
+
+%znu=ncread(infile,'ZNU');
+%znw=ncread(infile,'ZNW');
+% 
+% x00=115.7255; y00=-32.1874;
+% 
+% lon1=squeeze(lon(:,:,1));
+% lat1=squeeze(lat(:,:,1));
+% 
+% xdiff=lon1-x00;
+% ydiff=lat1-y00;
+% tdiff=sqrt(xdiff.^2+ydiff.^2);
+
+indx=32;indy=49;
+
+%%
+
+
+%%
+readdata1=0;
+
+if readdata1
+    t2=ncread(infile2,'time')/24+datenum(1990,1,1);
+T2S=ncread(infile2,'T2',[indx indy 1],[1 1 Inf]);T2S=squeeze(T2S(1,1,:));
+SWS=ncread(infile2,'SWDOWN',[indx indy 1],[1 1 Inf]);SWS=squeeze(SWS(1,1,:));
+LWS=ncread(infile2,'GLW',[indx indy 1],[1 1 Inf]);LWS=squeeze(LWS(1,1,:));
+save('extracted_WRF_202324.mat','t2','T2S','SWS','LWS','-v7.3');
+
+else
+load extracted_WRF_202324.mat;
+end
+
+%%
+readdata2=0;
+
+if readdata2
+
+
+t0=ncread(infile,'Times');
+for i=1:size(t0,2)
+    tmp=t0(:,i);
+    Str=convertCharsToStrings(tmp);
+    t3(i)=datenum(Str,'yyyy-mm-dd_HH:MM:SS');
+end
+
+T2=ncread(infile,'T2',[indx indy 1],[1 1 Inf]);T2=squeeze(T2(1,1,:));
+SW=ncread(infile,'SWDNB',[indx indy 1],[1 1 Inf]);SW=squeeze(SW(1,1,:));
+LW=ncread(infile,'LWDNB',[indx indy 1],[1 1 Inf]);LW=squeeze(LW(1,1,:));
+save('extracted_WRF_202301.mat','t3','T2','SW','LW','-v7.3');
+
+else
+load extracted_WRF_202301.mat;
+end
+
+%%
+
+%%
+
+hfig = figure('visible','on','position',[304         166        1271         812]);
+
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf,'paperposition',[0.635 6.35 30.32 20]);
+datearray=datenum(2023,1,1:10:41);
+
+c2f='c';
+ms =4;
+
+for v=1:3
+    subplot(3,1,1);
+    
+    plot(t3,T2,'Color','b','DisplayName','raw');
+    hold on;
+    plot(t2,T2S,'Color','k','DisplayName','converted');
+    hold on;
+
+    set(gca,'xlim',[datearray(1) datearray(end)],'XTick',datearray,'XTickLabel',datestr(datearray,'yyyy'));
+    % set(gca,'ylim',[34 37]);
+    box on;
+    ylabel(units{v})
+
+    title(titles{v});
+
+    if v==1
+        scatter(MOI.csiem.MOI_PISCES_Point_11.WQ_PHS_FRP.Date,MOI.csiem.MOI_PISCES_Point_11.WQ_PHS_FRP.Data,ms,c2f,'filled','MarkerFaceAlpha',.2,'MarkerEdgeAlpha',.2,'DisplayName','PISCES');
+        ylim([0 0.4]);
+        hold on;
+        hl=legend; 
+        % set(hl,'Location','eastoutside');    
+    elseif v==2
+        ylim([0 0.5]);
+        hl=legend; 
+        % set(hl,'Location','eastoutside');    
+    elseif v==3
+        scatter(MOI.csiem.MOI_PISCES_Point_11.WQ_NIT_NIT.Date,MOI.csiem.MOI_PISCES_Point_11.WQ_NIT_NIT.Data,ms,c2f,'filled','MarkerFaceAlpha',.2,'MarkerEdgeAlpha',.2,'DisplayName','PISCES');
+        ylim([0 1]);
+        hold on;
+        hl=legend; 
+        % set(hl,'Location','eastoutside');    
+    elseif v==4
+        scatter(MOI.csiem.MOI_PISCES_Point_11.WQ_OXY_OXY.Date,MOI.csiem.MOI_PISCES_Point_11.WQ_OXY_OXY.Data,ms,c2f,'filled','MarkerFaceAlpha',.2,'MarkerEdgeAlpha',.2,'DisplayName','PISCES');
+        ylim([180 300]);
+        hold on;
+        hl=legend; 
+        set(hl,'Location','northwest');
+    elseif v==5
+        scatter(ESA.csiem.ESA_GC_Point_11.SPM.Date,ESA.csiem.ESA_GC_Point_11.SPM.Data,ms,c2f,'filled','MarkerFaceAlpha',.2,'MarkerEdgeAlpha',.2,'DisplayName','GlobColour');
+        ylim([0 6]);
+        hold on;
+        hl=legend; 
+
+        % set(hl,'Location','eastoutside');
+    elseif v==6
+        scatter(ESA.csiem.ESA_SEN_Point_11.WQ_DIAG_PHY_TCHLA.Date,ESA.csiem.ESA_SEN_Point_11.WQ_DIAG_PHY_TCHLA.Data,ms,c2f,'filled','MarkerFaceAlpha',.2,'MarkerEdgeAlpha',.2,'DisplayName','Sentinel');
+        ylim([0 5]);
+        hold on;
+        hl=legend; 
+    end
+
+    set(hl,'FontSize',6)
+
+end
+
+img_name ='DWER_Benchmarking_timeseries_monthly.png';
+
+saveas(gcf,img_name);
