@@ -1,0 +1,47 @@
+clear all; close all;
+
+zoofile='zooplankton biovolume mm3_m3 Westport.xlsx';
+
+%data=readtable(zoofile);
+
+[~,species,~] = xlsread(zoofile,'A2:A44');
+[~,sitedate,~] = xlsread(zoofile,'B1:FY1');
+[values,~,~] = xlsread(zoofile,'B2:FY44');
+
+for i=1:length(sitedate)
+    C=split(sitedate{i},' ');
+    sites{i}=C{1};
+    months{i}=C{2};
+    years{i}=C{3};
+end
+
+uniqSites=unique(sites);
+uniqMonths=unique(months);
+
+for j=1:length(uniqSites)
+    tmpinds(j).ids=find(strcmp(sites, uniqSites{j}));
+
+    for k=1:length(species)
+        processed.(uniqSites{j}).(species{k})=values(k,tmpinds(j).ids);
+    end
+
+end
+
+%%
+
+gcf=figure(1);
+pos=get(gcf,'Position');
+xSize = 28;
+ySize = 22;
+newPos3=(pos(3)+pos(4))*xSize/(xSize+ySize);
+newPos4=(pos(3)+pos(4))*ySize/(xSize+ySize);
+set(gcf,'Position',[pos(1) pos(2) newPos3 newPos4]);
+%  set(0,'DefaultAxesFontName',master.font);
+%  set(0,'DefaultAxesFontSize',master.fontsize);
+
+%--% Paper Size
+set(gcf, 'PaperPositionMode', 'manual');
+set(gcf, 'PaperUnits', 'centimeters');
+set(gcf,'paperposition',[0 0 xSize ySize]);
+clf;
+

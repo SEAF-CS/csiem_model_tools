@@ -1,0 +1,19 @@
+%%
+clear; close all;
+
+matfile='W:\csiem\csiem-marvl-dev\data\agency\csiem_DWER_public.mat';
+intv=20;
+
+data=load(matfile);
+
+sites=fieldnames(data.csiem);
+
+for ss=1:length(sites)
+    vars=fieldnames(data.csiem.(sites{ss}));
+
+    for vv=1:length(vars)
+        data.csiem.(sites{ss}).(vars{vv})=data.csiem.(sites{ss}).(vars{vv});
+
+    vdata=data.csiem.(sites{ss}).(vars{vv}).Data;
+    if length(vdata)>5000
+        data2.csiem.(sites{ss}).Data=data.csiem.(sites{ss}).Data(1:intv:end);

@@ -1,0 +1,42 @@
+%%
+clear; close all;
+
+master.fielddata_folder = 'W:/csiem/csiem-marvl-dev/data/agency/';    %'/Projects2/csiem/Data/Mat/agency/';
+%master.fielddata_files = {'csiem_IMOS_public_reduced50','csiem_CSMC_public','csiem_DWER_public_reduced50','csiem_DPIRD_public','csiem_WCWA_public','csiem_WAMSI_public'};
+master.fielddata_files = {'csiem_CSMC_public','csiem_DPIRD_public','csiem_WCWA_public','csiem_WAMSI_public'};
+
+master.fielddata = 'csiem'; 
+
+for ff=1:length(master.fielddata_files)
+    matfile=[master.fielddata_folder,master.fielddata_files{ff},'.mat'];
+    disp(['loading field data: ',matfile, ' ...']);
+    tmp=load(matfile);
+    
+    if ff==1
+        fdata=tmp.(master.fielddata);
+        
+    else
+        fields=fieldnames(tmp.(master.fielddata));
+        
+        for f=1:length(fields)
+            fdata.(fields{f})=tmp.(master.fielddata).(fields{f});
+        end
+    end
+end
+
+sites=fieldnames(fdata);
+
+%%
+inc=1;
+Agencys={};
+for ss=1:length(sites)
+    vars=fieldnames(fdata.(sites{ss}));
+
+    for vv=1:length(vars)
+        str=fdata.(sites{ss}).(vars{ss}).Agency;
+        Agencys{inc}=string(str);
+        inc=inc+1;
+    end
+end
+
+
