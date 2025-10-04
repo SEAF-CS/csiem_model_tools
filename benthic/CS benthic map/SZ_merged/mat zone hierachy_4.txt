@@ -1,0 +1,19 @@
+
+Cockburn Sound Material Zone 013
+fvc config material zones order
+
+material == 1! entire model domain 
+material == 16! swan river
+material == 21, 22, 23, 24, 25, 26, 27! sed grainsize
+material == 61! soft substrate sand
+material == 68, 89! hard substrate reef (68 is from previous version and outside CSOA (from various sources), 89 is from Ranae's latest version and in CSOA only)
+material == 70! mixed substrate
+material == 59! artificial structure
+material == 60! Seagrass (Swan River)(no species info)
+material == 66! Seagrass (Perennial) (no species info)
+material == 80,81,82,83,84,85,86,87! Seagrass (with species info)
+
+
+
+
+
